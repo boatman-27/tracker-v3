@@ -1,4 +1,4 @@
-const BASE_URL = "https://tracker-v3-backend.vercel.app";
+const BASE_URL = "<YOUR_SERVER_URL>";
 
 export async function getTodos() {
   try {

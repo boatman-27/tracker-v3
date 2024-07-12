@@ -17,10 +17,17 @@ app.use(
   })
 );
 
-const db = new pg.Client({
-  connectionString: process.env.POSTGRES_URL,
+const { Pool } = pg;
+
+const pool = new Pool({
+  connectionString: process.env.POSTGRES_URL, // Comment this out if you are using pgAdmin to connect to your database
+  // Uncomment these if you are using pgAdmin to connect to your database
+  // user: process.env.PG_USER,
+  // password: process.env.PG_PASSWORD,
+  // host: process.env.PG_HOST,
+  // port: process.env.PG_PORT,
+  // database: process.env.PG_DATABASE,
 });
-db.connect();
 
 app.get("/getJobs", async (req, res) => {
   try {
