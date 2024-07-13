@@ -31,7 +31,7 @@ const pool = new Pool({
 
 app.get("/getJobs", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM jobs");
+    const result = await pool.query("SELECT * FROM jobs");
     res.send(result.rows);
   } catch (error) {
     console.error("Error fetching jobs:", error);
@@ -50,7 +50,7 @@ app.post("/addJobs", (req, res) => {
     status,
   } = req.body;
   try {
-    db.query(
+    pool.query(
       "INSERT INTO jobs (job_title, job_desc, comp_name, comp_location, link, job_status, date_applied) VALUES ($1, $2, $3, $4, $5, $6, $7)",
       [
         jobTitle,
@@ -82,7 +82,7 @@ app.get("/jobs/:id", (req, res) => {
     if (!id) {
       throw new Error("Please provide an id");
     }
-    const job = db.query("SELECT * FROM jobs WHERE id = $1", [id]);
+    const job = pool.query("SELECT * FROM jobs WHERE id = $1", [id]);
     if (!job.rowCount) {
       throw new Error("Job not found");
     }
@@ -99,7 +99,7 @@ app.delete("/deleteJob/:id", (req, res) => {
     throw new Error("Provided ID is invalid");
   }
   try {
-    db.query("DELETE FROM jobs WHERE id = $1", [id], (err, result) => {
+    pool.query("DELETE FROM jobs WHERE id = $1", [id], (err, result) => {
       if (err) {
         console.error("Error deleting job:", err);
         res.status(500).send("Error deleting job");
@@ -120,7 +120,7 @@ app.patch("/modifyStatus/:id", (req, res) => {
     if (!id) {
       throw new Error("Please provide an id");
     }
-    db.query(
+    pool.query(
       "UPDATE jobs SET job_status = ($1) WHERE id = ($2)",
       [status, id],
       (err, result) => {
@@ -154,7 +154,7 @@ app.patch("/editJob/:id", (req, res) => {
     if (!id) {
       throw new Error("Provided ID is invalid");
     }
-    db.query(
+    pool.query(
       "UPDATE jobs SET job_title = ($1), job_desc = ($2), comp_name = ($3), comp_location = ($4), link = ($5), job_status = ($6), date_applied = ($7) WHERE id = ($8)",
       [
         jobTitle,
@@ -183,7 +183,7 @@ app.patch("/editJob/:id", (req, res) => {
 
 app.get("/getTodos", async (req, res) => {
   try {
-    const result = await db.query("SELECT * FROM todos");
+    const result = await pool.query("SELECT * FROM todos");
     res.send(result.rows);
   } catch (error) {
     console.error("Error fetching todos:", error);
@@ -194,7 +194,7 @@ app.get("/getTodos", async (req, res) => {
 app.post("/addTodos", (req, res) => {
   const { taskTitle, taskContent, timeFrame, dateApplied, status } = req.body;
   try {
-    db.query(
+    pool.query(
       "INSERT INTO todos (task_title, task_content, time_frame, date_applied, status) VALUES ($1, $2, $3, $4, $5)",
       [taskTitle, taskContent, timeFrame, dateApplied, status],
       (err, result) => {
@@ -218,7 +218,7 @@ app.delete("/deleteTodo/:id", async (req, res) => {
     throw new Error("Provided ID is invalid");
   }
   try {
-    db.query("DELETE FROM todos WHERE id = $1", [id], (err, result) => {
+    pool.query("DELETE FROM todos WHERE id = $1", [id], (err, result) => {
       if (err) {
         console.error("Error deleting todo:", err);
         res.status(500).send("Error deleting todo");
@@ -238,7 +238,7 @@ app.patch("/completeTodo/:id", async (req, res) => {
     throw new Error("Provided ID is invalid");
   }
   try {
-    db.query(
+    pool.query(
       "UPDATE todos SET status = 'Completed' WHERE id = $1",
       [id],
       (err, result) => {
@@ -263,7 +263,7 @@ app.patch("/delayTodo/:id", async (req, res) => {
     throw new Error("Provided ID is invalid");
   }
   try {
-    db.query(
+    pool.query(
       "UPDATE todos SET time_frame = $1 WHERE id = $2",
       [newTimeFrame, id],
       (err, result) => {
@@ -286,7 +286,7 @@ app.patch("/editTodo/:id", async (req, res) => {
   console.log(req.body);
   const { taskTitle, taskContent, timeFrame, dateApplied, status } = req.body;
   try {
-    db.query(
+    pool.query(
       "UPDATE todos SET task_title = ($1), task_content = ($2), time_frame = ($3), date_applied = ($4), status = ($5) WHERE id = ($6)",
       [taskTitle, taskContent, timeFrame, dateApplied, status, id],
       (err, result) => {
